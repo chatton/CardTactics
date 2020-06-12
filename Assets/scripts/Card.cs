@@ -5,7 +5,7 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
 
-
+    public CardItem cardItem;
 
     [SerializeField] private Color _onMouseEnterColour;
     private Color originalColor;
@@ -26,6 +26,7 @@ public class Card : MonoBehaviour
     private void OnMouseEnter()
     {
         _renderer.material.color = _onMouseEnterColour;
+        Debug.Log("Name: " + cardItem.name);
     }
 
 }
