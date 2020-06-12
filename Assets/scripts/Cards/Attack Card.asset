@@ -17,8 +17,13 @@ MonoBehaviour:
   isDefaultItem: 0
 <<<<<<< Updated upstream:Assets/scripts/Cards/Attack Card.asset
 <<<<<<< Updated upstream:Assets/scripts/Cards/Attack Card.asset
+<<<<<<< Updated upstream:Assets/scripts/Cards/Attack Card.asset
   dmg: 3
   cost: 1
+=======
+  dmg: 0
+  cost: 0
+>>>>>>> Stashed changes:Assets/scripts/Attack Card.asset
 =======
   dmg: 0
   cost: 0
