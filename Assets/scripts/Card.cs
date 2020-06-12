@@ -16,6 +16,7 @@ public class Card : MonoBehaviour
     {
         _renderer = GetComponent<MeshRenderer>();
         originalColor = _renderer.material.color;
+        GetComponentInChildren<TextMesh>().text=(cardItem.name + "\n" + "Dmg: " + cardItem.dmg + "\n" + "Cost: " + cardItem.cost);  
     }
 
 
