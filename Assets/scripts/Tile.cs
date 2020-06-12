@@ -11,17 +11,15 @@ public class Tile : MonoBehaviour
     public bool visited = false;
     private MeshRenderer _renderer;
 
-    public bool reachable;
     public bool walkable;
     public int distance;
-    public bool debug;
 
     // Start is called before the first frame update
     void Start()
     {
         _neighbours = buildNeighboursList();
         _renderer = GetComponent<MeshRenderer>();
-        print(_neighbours.Count);
+        SetColour(Color.gray);
     }
 
     // Update is called once per frame
@@ -31,30 +29,39 @@ public class Tile : MonoBehaviour
     }
 
     void updateColour() {
-        if (debug) {
-            _renderer.material.color = Color.cyan;
-        }
+        //if (debug) {
+        //    _renderer.material.color = Color.cyan;
+        //}
 
-        else if (walkable) {
+        //else if (walkable) {
 
-            _renderer.material.color = Color.green;
-        }
-        else
-        {
-            _renderer.material.color = Color.grey;
+        //    _renderer.material.color = Color.green;
+        //}
+        //else
+        //{
+        //    _renderer.material.color = Color.grey;
 
-        }
+        //}
+    }
+
+    internal void SetColour(Color color)
+    {
+        _renderer.material.color = color;
+    }
 
 
+    public void Reset()
+    {
+        visited = false;
+        walkable = false;
+        distance = 0;
     }
 
     private Tile checkTile(Vector3 direction)
     {
         Collider[] colliders = Physics.OverlapBox(transform.position + direction, new Vector3(0.25f, 0, 0.25f));
-        print(colliders.Length);
         foreach (Collider col in colliders)
-        {
-            
+        {   
             Tile tile = col.GetComponent<Tile>();
             if (tile != null)
             {
@@ -63,20 +70,6 @@ public class Tile : MonoBehaviour
         }
         return null;
     }
-
-    //private Tile checkTile(Vector3 direction)
-    //{
-
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(transform.position, direction, out hit))
-    //    {
-    //        Tile t = hit.transform.gameObject.GetComponent<Tile>();
-    //        if (t != null) {
-    //            return t;
-    //        }
-    //    }
-    //    return null;
-    //}
 
     public List<Tile> GetNeighbours()
     {

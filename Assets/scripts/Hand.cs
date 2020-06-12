@@ -19,7 +19,6 @@ public class Hand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         for (int i = 0; i < _cards.Length; i++)
         {
             Card c = _cards[i];

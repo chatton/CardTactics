@@ -22,7 +22,13 @@ public class TacticsMove : MonoBehaviour {
 
     private void OnMouseOver()
     {
-        highlightPath();
+        highlightPath(Color.green);
+    }
+
+    private void OnMouseExit()
+    {
+        print("OnMouseExit");
+        highlightPath(Color.grey);
     }
 
 
@@ -35,15 +41,15 @@ public class TacticsMove : MonoBehaviour {
         return null;
     }
 
-    private void highlightPath() {
-
+    private void highlightPath(Color color) {
         Tile startingTile = getCurrentTile();
-        startingTile.walkable = true;
-     
+
+        List<Tile> toReset = new List<Tile>();
         Queue<Tile> q = new Queue<Tile>();
         q.Enqueue(startingTile);
         while (q.Count > 0) {
             Tile t = q.Dequeue();
+            toReset.Add(t);
 
             // don't look at any tiles that are outside of the movement range
             if (t.visited || t.distance > _movementDistance)
@@ -52,13 +58,7 @@ public class TacticsMove : MonoBehaviour {
                 continue;
             }
 
-            //if (t.visited) {
-                //continue;
-            //}
-
-            t.visited = true;
-            t.walkable = true;
-            
+            t.SetColour(color);
 
             var nextNeighbours = t.GetNeighbours();
             foreach (var n in nextNeighbours) {
@@ -69,6 +69,10 @@ public class TacticsMove : MonoBehaviour {
                     q.Enqueue(n);
                 }
             }
+        }
+
+        foreach (Tile t in toReset) {
+            t.Reset();
         }
     }
 }
