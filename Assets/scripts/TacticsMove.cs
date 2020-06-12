@@ -10,13 +10,13 @@ public class TacticsMove : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        getCurrentTile().walkable = true;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        findPath();
+        
     }
 
 
@@ -25,14 +25,6 @@ public class TacticsMove : MonoBehaviour {
         highlightPath();
     }
 
-    private void highlightPath()
-    {
-        print("Highlighting path!");
-        var path = findPath();
-        foreach (Tile t in path) {
-            t.walkable = true;
-        }
-    }
 
     Tile getCurrentTile() {
         RaycastHit hit;
@@ -43,34 +35,42 @@ public class TacticsMove : MonoBehaviour {
         return null;
     }
 
-    private List<Tile> findPath() {
+    private void highlightPath() {
 
         Tile startingTile = getCurrentTile();
-        
-        List<Tile> neighbours = startingTile.GetNeighbours();
-        int currentDepth = 0;
+        startingTile.walkable = true;
+     
         Queue<Tile> q = new Queue<Tile>();
         q.Enqueue(startingTile);
-        startingTile.visited = true;
-        startingTile.walkable = true;
-
+        int currDisance = 0;
         while (q.Count > 0) {
             Tile t = q.Dequeue();
-            t.visited = true;
-            t.walkable = true;
 
-            if (!t.visited) {
-                var nextNeighbours = t.GetNeighbours();
-                foreach (var n in neighbours) {
-                    q.Enqueue(t);
-                    t.visited = true;
-                    t.walkable = true;
-                }
+            // don't look at any tiles that are outside of the movement range
+            if (t.distance > _movementDistance)
+            {
+                t.visited = true;
+                continue;
             }
 
+
+            // we've now visited this tile
+            t.visited = true;
+            t.walkable = true;
+            t.distance = currDisance;
+
+            var nextNeighbours = t.GetNeighbours();
+            foreach (var n in nextNeighbours) {
+                if (!n.visited)
+                {
+              
+                    n.visited = true;
+                    n.walkable = true;
+                    n.distance = t.distance + 1;
+                    q.Enqueue(n);
+                }
+            }
+            currDisance += 1;
         }
-
-        return neighbours;
     }
-
 }

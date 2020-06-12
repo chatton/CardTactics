@@ -13,6 +13,8 @@ public class Tile : MonoBehaviour
 
     public bool reachable;
     public bool walkable;
+    public int distance;
+    public bool debug;
 
 
 
@@ -29,41 +31,67 @@ public class Tile : MonoBehaviour
     }
 
     void updateColour() {
-        if (walkable)
-        {
+        if (debug) {
+            _renderer.material.color = Color.cyan;
+        }
+
+        else if (walkable) {
+
             _renderer.material.color = Color.green;
         }
-        else {
+        else
+        {
             _renderer.material.color = Color.grey;
 
         }
 
+
     }
 
-    private Tile checkTile(Vector3 direction) {
-        Collider[] colliders = Physics.OverlapBox(transform.position + direction, new Vector3(0.25f, 0.5f, 0.25f));
-        foreach (Collider col in colliders) {
+    private Tile checkTile(Vector3 direction)
+    {
+        Collider[] colliders = Physics.OverlapBox(transform.position + direction, new Vector3(0.25f, 0, 0.25f));
+        print(colliders.Length);
+        foreach (Collider col in colliders)
+        {
+            
             Tile tile = col.GetComponent<Tile>();
-            if (tile != null) {
+            if (tile != null)
+            {
                 return tile;
             }
         }
         return null;
     }
 
+    //private Tile checkTile(Vector3 direction)
+    //{
+
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(transform.position, direction, out hit))
+    //    {
+    //        Tile t = hit.transform.gameObject.GetComponent<Tile>();
+    //        if (t != null) {
+    //            return t;
+    //        }
+    //    }
+    //    return null;
+    //}
+
     public List<Tile> GetNeighbours()
     {
         Vector3[] checkVectors = new[] {
-            Vector3.up,
-            Vector3.down,
+            Vector3.forward,
+            -Vector3.forward,
             Vector3.right,
-            Vector3.left,
+            -Vector3.right,
         };
 
         var tiles = new List<Tile>();
         foreach (Vector3 v in checkVectors) {
             Tile t = checkTile(v);
             if (t != null) {
+                //t.debug = true
                 tiles.Add(t);
             }
         }
