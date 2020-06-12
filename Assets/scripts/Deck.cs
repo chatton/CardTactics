@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 public class Deck
 {
     
@@ -18,15 +19,16 @@ public class Deck
 
     public List<Card> drawHand(int handSize) {
         var list = new List<Card>();
-        for(int i = 0; i < handSize; i++){
-            if _cards.Count == 0 {
+        for(int i = 0; i < handSize; i++)
+        {
+            if (_cards.Count == 0) {
                 shuffleDiscard();
             }
             Card c = _cards.Pop();
             _discard.Push(c);
             list.Add(c);
         }
-        ruturn list;
+        return list;
     }
 
     // shuffle all of the discard pile into the cards
@@ -35,6 +37,7 @@ public class Deck
         var values = _discard.ToArray();
         _discard.Clear();
         _cards.Clear();
+        var rnd = new Random();
         foreach (var value in values.OrderBy(x => rnd.Next())){
             _cards.Push(value);
         }
