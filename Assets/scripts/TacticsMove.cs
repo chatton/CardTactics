@@ -11,7 +11,9 @@ public abstract class TacticsMove : MonoBehaviour {
     [SerializeField] private bool _selected;
     private Color _originalColour;
     private Renderer _renderer;
+    private bool _mouseOver;
     [SerializeField] private Tile _destinationTile;
+    [SerializeField] List<Tile> path;
 
     private void Start()
     {
@@ -21,42 +23,97 @@ public abstract class TacticsMove : MonoBehaviour {
 
     private void Update()
     {
+        UpdateColour();
+        HighlightTilesInRange();
 
-        if (_selected) {
-            highlightPath(true);
-        }
-
-        if (_destinationTile != null && _destinationTile.distance <= _movementDistance)
+        if (HasValidTarget())
         {
+            SetDestinationTile();
             Move();
+
         }
         else {
-            CheckMouse();
+            CheckMouseForTarget();
         }
         
     }
 
-    private void Move()
+    private void SetDestinationTile()
     {
-       
 
-        List<Tile> path = BuildPathFromTile(_destinationTile);
-        highlightPath(false);
+        path = BuildPathFromTile(_destinationTile);
+        ResetTiles();
 
-        if (path.Count == 0) {
+        if (path.Count == 0)
+        {
             _destinationTile = null;
             return;
         }
 
-        _destinationTile = path[0];
+        // TODO: teleporting to last tile for now
+        _destinationTile = path[path.Count - 1]; 
+    }
+
+
+
+    private void Move()
+    {
         var destinationPos = _destinationTile.transform.position;
         transform.position = new Vector3(destinationPos.x, transform.position.y, destinationPos.z);
-        _destinationTile = null;
+    }
 
-        foreach (Tile t in path) {
-            t.Reset();
+
+    private bool HasValidTarget() {
+        return _destinationTile != null && _destinationTile.distance <= _movementDistance;
+    }
+
+    private void HighlightTilesInRange()
+    {
+        if (_mouseOver || _selected) {
+            MarkWalkable();
+            return;
+        }
+
+        // any tiles in range should be reset if there is no player interaction
+        // happening
+        ResetTiles();
+    }
+
+    private void UpdateColour()
+    {
+        if (_selected)
+        {
+            _renderer.material.color = Color.blue;
+        }
+        else
+        {
+            _renderer.material.color = _originalColour;
         }
     }
+
+
+
+    //public IEnumerator MoveOverSpeed(GameObject objectToMove, Vector3 end, float speed)
+    //{
+    //    // speed should be 1 unit per second
+    //    while (objectToMove.transform.position != end)
+    //    {
+    //        objectToMove.transform.position = Vector3.MoveTowards(objectToMove.transform.position, end, speed * Time.deltaTime);
+    //        yield return new WaitForEndOfFrame();
+    //    }
+    //}
+    //public IEnumerator MoveOverSeconds(GameObject objectToMove, Vector3 end, float seconds)
+    //{
+    //    float elapsedTime = 0;
+    //    Vector3 startingPos = objectToMove.transform.position;
+    //    while (elapsedTime < seconds)
+    //    {
+    //        objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / seconds));
+    //        elapsedTime += Time.deltaTime;
+    //        yield return new WaitForEndOfFrame();
+    //    }
+    //    objectToMove.transform.position = end;
+    //}
 
     private List<Tile> BuildPathFromTile(Tile destinationTile)
     {
@@ -64,7 +121,7 @@ public abstract class TacticsMove : MonoBehaviour {
         Tile nextTile = destinationTile;
         
         while (nextTile.parent != null) {
-            path.Add(destinationTile);
+            path.Add(nextTile);
             nextTile = nextTile.parent;
         }
 
@@ -75,20 +132,15 @@ public abstract class TacticsMove : MonoBehaviour {
 
     private void OnMouseOver()
     {
-        // display the movable tiles in green
-        highlightPath(true);
+        _mouseOver = true;
     }
 
     private void OnMouseExit()
     {
-        // reset the tiles to hide the generated path
-        if (!_selected) {
-            highlightPath(false);
-        }
-        
+        _mouseOver = false;
     }
 
-    private void CheckMouse() {
+    private void CheckMouseForTarget() {
         if (Input.GetMouseButtonUp(0)) {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -118,18 +170,16 @@ public abstract class TacticsMove : MonoBehaviour {
         return null;
     }
 
+    // Toggle selected on mouse click which will prompt
+    // filling of the tiles as walkable.
     private void OnMouseDown()
     {
         _selected = !_selected;
-        if (_selected) {
-            _renderer.material.color = Color.blue;
-        } else {
-            _renderer.material.color = _originalColour;
-        }
-        highlightPath(true);
     }
 
 
+    // GetTilesInRange returns a list of all the tiles within _movementDistance
+    // tiles of the character.
     private List<Tile> GetTilesInRange() {
 
         HashSet<Tile> visited = new HashSet<Tile>();
@@ -169,16 +219,20 @@ public abstract class TacticsMove : MonoBehaviour {
         return new List<Tile>(visited);
     }
 
-    private void highlightPath(bool walkable)
-    {
+    private void ResetTiles() {
         var allTilesInRange = GetTilesInRange();
-        foreach (Tile t in allTilesInRange) {
-            if (!walkable) {
-                t.Reset();
-            } else {
-                t.walkable = true;
-            }
-            
+        foreach (Tile t in allTilesInRange)
+        {
+            t.Reset();
         }
     }
+
+    private void MarkWalkable() {
+        var allTilesInRange = GetTilesInRange();
+        foreach (Tile t in allTilesInRange)
+        {
+            t.walkable = true;
+        }
+    }
+
 }
