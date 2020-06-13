@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System;
 
 // this class is the base class for Player and AI movement
+[RequireComponent(typeof(TurnManager))]
 public abstract class TacticsMove : MonoBehaviour {
 
+
+    TurnManager _turnManager;
 
     [SerializeField] protected int _movementDistance = 5;
     [SerializeField] private bool _selected;
@@ -26,6 +29,7 @@ public abstract class TacticsMove : MonoBehaviour {
 
     private void Start()
     {
+        _turnManager = FindObjectOfType<TurnManager>();
         _renderer = GetComponent<MeshRenderer>();
         _originalColour = _renderer.material.color;
         _path = new Stack<Tile>();
