@@ -1356,6 +1356,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7997318779655545414, guid: 64fe00232f50746eab5477512ad56630,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7997318779655545465, guid: 64fe00232f50746eab5477512ad56630,
         type: 3}
       propertyPath: _turnManager
@@ -3227,6 +3232,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 3789746850118540097, guid: aea82714ccbe3472fb7ca66a6081f271,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.484
+      objectReference: {fileID: 0}
     - target: {fileID: 4607611989936831439, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3295,17 +3305,17 @@ PrefabInstance:
     - target: {fileID: 5328844364058250281, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.84
+      value: 1.62
       objectReference: {fileID: 0}
     - target: {fileID: 5328844364058250281, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.1
+      value: -6.03
       objectReference: {fileID: 0}
     - target: {fileID: 5328844364058250281, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1
+      value: -2.62
       objectReference: {fileID: 0}
     - target: {fileID: 5328844364058250281, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}

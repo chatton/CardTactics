@@ -44,10 +44,10 @@ public abstract class TacticsMove : MonoBehaviour {
 
     public void Update()
     {
-        string currentTeam = _turnManager.GetActiveTeam();
-        if (gameObject.tag != currentTeam) {
-            return;
-        }
+        //string currentTeam = _turnManager.GetActiveTeam();
+        //if (gameObject.tag != currentTeam) {
+        //    return;
+        //}
 
         UpdateColour();
         HighlightTilesInRange();
@@ -183,11 +183,11 @@ public abstract class TacticsMove : MonoBehaviour {
     // filling of the tiles as walkable.
     private void OnMouseDown()
     {
-        string currentTeam = _turnManager.GetActiveTeam();
-        if (gameObject.tag != currentTeam)
-        {
-            return;
-        }
+        //string currentTeam = _turnManager.GetActiveTeam();
+        //if (gameObject.tag != currentTeam)
+        //{
+        //    return;
+        //}
         _selected = !_selected;
     }
 
