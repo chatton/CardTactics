@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 // this class is the base class for Player and AI movement
 public abstract class TacticsMove : MonoBehaviour {
@@ -8,17 +9,9 @@ public abstract class TacticsMove : MonoBehaviour {
 
     [SerializeField] private int _movementDistance = 5;
     [SerializeField] private bool _selected;
-    private bool _pathIsHighlighted;
     private Color _originalColour;
     private Renderer _renderer;
-
-    private void Update()
-    {
-        //if (_selected) {
-        //    _pathIsHighlighted = true;
-        //    highlightPath(Color.green);
-        //}
-    }
+    [SerializeField] private Tile _destinationTile;
 
     private void Start()
     {
@@ -26,21 +19,94 @@ public abstract class TacticsMove : MonoBehaviour {
         _originalColour = _renderer.material.color;
     }
 
+    private void Update()
+    {
+
+        if (_selected) {
+            highlightPath(true);
+        }
+
+        if (_destinationTile != null && _destinationTile.distance <= _movementDistance)
+        {
+            Move();
+        }
+        else {
+            CheckMouse();
+        }
+        
+    }
+
+    private void Move()
+    {
+       
+
+        List<Tile> path = BuildPathFromTile(_destinationTile);
+        highlightPath(false);
+
+        if (path.Count == 0) {
+            _destinationTile = null;
+            return;
+        }
+
+        _destinationTile = path[0];
+        var destinationPos = _destinationTile.transform.position;
+        transform.position = new Vector3(destinationPos.x, transform.position.y, destinationPos.z);
+        _destinationTile = null;
+
+        foreach (Tile t in path) {
+            t.Reset();
+        }
+    }
+
+    private List<Tile> BuildPathFromTile(Tile destinationTile)
+    {
+        List<Tile> path = new List<Tile>();
+        Tile nextTile = destinationTile;
+        
+        while (nextTile.parent != null) {
+            path.Add(destinationTile);
+            nextTile = nextTile.parent;
+        }
+
+        path.Reverse();
+
+        return path;
+    }
+
     private void OnMouseOver()
     {
         // display the movable tiles in green
-        highlightPath(Color.green);
+        highlightPath(true);
     }
 
     private void OnMouseExit()
     {
         // reset the tiles to hide the generated path
         if (!_selected) {
-            highlightPath(Color.grey);
+            highlightPath(false);
         }
         
     }
 
+    private void CheckMouse() {
+        if (Input.GetMouseButtonUp(0)) {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit)) {
+                Tile t = hit.collider.GetComponent<Tile>();
+                if (t == null) {
+                    return;
+                }
+
+                if (t.parent == null) {
+                    return;
+                }
+
+                _destinationTile = t;
+            }
+        }
+    }
 
     private Tile GetCurrentTile() {
         // shoot a ray vertically downwards to check for current tile
@@ -60,35 +126,37 @@ public abstract class TacticsMove : MonoBehaviour {
         } else {
             _renderer.material.color = _originalColour;
         }
-        highlightPath(Color.green);
+        highlightPath(true);
     }
 
-    private void highlightPath(Color color) {
-        Tile startingTile = GetCurrentTile();
 
-        // keep track of every tile that we've updated
-        List<Tile> toReset = new List<Tile>();
+    private List<Tile> GetTilesInRange() {
+
+        HashSet<Tile> visited = new HashSet<Tile>();
+        Tile startingTile = GetCurrentTile();
 
         // keep track of every tile that we need to look at
         Queue<Tile> q = new Queue<Tile>();
         q.Enqueue(startingTile);
-        while (q.Count > 0) { // only stop when there are no tiles left
+       
+        while (q.Count > 0)
+        {
+            // only stop when there are no tiles left
             Tile t = q.Dequeue();
-            toReset.Add(t);
+            
 
             // don't look at any tiles that are outside of the movement range
-            if (t.visited || t.distance > _movementDistance)
+            if (visited.Contains(t) || t.distance > _movementDistance)
             {
-                t.visited = true;
                 continue;
             }
 
-            // we are marking this tile with the given colour
-            t.SetColour(color);
+            visited.Add(t);
 
             var nextNeighbours = t.GetNeighbours();
-            foreach (var n in nextNeighbours) {
-                if (!n.visited)
+            foreach (var n in nextNeighbours)
+            {
+                if (!visited.Contains(n))
                 {
                     // each tile is one further from the previous
                     n.distance = t.distance + 1;
@@ -98,15 +166,19 @@ public abstract class TacticsMove : MonoBehaviour {
             }
         }
 
-        // reset every tile that was looked at in this search
-        foreach (Tile t in toReset) {
-            t.Reset();
-        }
+        return new List<Tile>(visited);
     }
 
-    public List<Tile> getPath()
+    private void highlightPath(bool walkable)
     {
-        List<Tile> path = new List<Tile>();
-        return path;
+        var allTilesInRange = GetTilesInRange();
+        foreach (Tile t in allTilesInRange) {
+            if (!walkable) {
+                t.Reset();
+            } else {
+                t.walkable = true;
+            }
+            
+        }
     }
 }

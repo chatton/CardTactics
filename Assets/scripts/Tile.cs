@@ -7,7 +7,6 @@ public class Tile : MonoBehaviour
 {
 
     private List<Tile> _neighbours;
-    private Tile _parent;
     public bool visited = false;
     private MeshRenderer _renderer;
 
@@ -18,17 +17,27 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _neighbours = buildNeighboursList();
+        _neighbours = BuildNeighboursList();
         _renderer = GetComponent<MeshRenderer>();
         SetColour(Color.gray);
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-  
+        UpdateColour();
     }
 
+    private void UpdateColour()
+    {
+        if (walkable)
+        {
+            SetColour(Color.green);
+        }
+        else {
+            SetColour(Color.gray);
+        }
+    }
 
     internal void SetColour(Color color)
     {
@@ -40,10 +49,11 @@ public class Tile : MonoBehaviour
     {
         visited = false;
         walkable = false;
+        parent = null;
         distance = 0;
     }
 
-    private Tile checkTile(Vector3 direction)
+    private Tile CheckTile(Vector3 direction)
     {
         Collider[] colliders = Physics.OverlapBox(transform.position + direction, new Vector3(0.25f, 0, 0.25f));
         foreach (Collider col in colliders)
@@ -62,7 +72,7 @@ public class Tile : MonoBehaviour
         return _neighbours;
     }
 
-    public List<Tile> buildNeighboursList()
+    public List<Tile> BuildNeighboursList()
     {
         Vector3[] checkVectors = new[] {
             Vector3.forward,
@@ -74,7 +84,7 @@ public class Tile : MonoBehaviour
         var tiles = new List<Tile>();
         foreach (Vector3 v in checkVectors)
         {
-            Tile t = checkTile(v);
+            Tile t = CheckTile(v);
             if (t != null)
             {
                 //t.debug = true
