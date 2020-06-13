@@ -13,6 +13,7 @@ public class Tile : MonoBehaviour
 
     public bool walkable;
     public int distance;
+    public Tile parent;
 
     // Start is called before the first frame update
     void Start()
@@ -25,24 +26,9 @@ public class Tile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        updateColour();    
+  
     }
 
-    void updateColour() {
-        //if (debug) {
-        //    _renderer.material.color = Color.cyan;
-        //}
-
-        //else if (walkable) {
-
-        //    _renderer.material.color = Color.green;
-        //}
-        //else
-        //{
-        //    _renderer.material.color = Color.grey;
-
-        //}
-    }
 
     internal void SetColour(Color color)
     {

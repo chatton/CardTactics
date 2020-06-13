@@ -2,37 +2,48 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class TacticsMove : MonoBehaviour {
+// this class is the base class for Player and AI movement
+public abstract class TacticsMove : MonoBehaviour {
 
 
     [SerializeField] private int _movementDistance = 5;
-    
-    // Use this for initialization
-    void Start()
+    [SerializeField] private bool _selected;
+    private bool _pathIsHighlighted;
+    private Color _originalColour;
+    private Renderer _renderer;
+
+    private void Update()
     {
-        
+        //if (_selected) {
+        //    _pathIsHighlighted = true;
+        //    highlightPath(Color.green);
+        //}
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        _renderer = GetComponent<MeshRenderer>();
+        _originalColour = _renderer.material.color;
     }
-
 
     private void OnMouseOver()
     {
+        // display the movable tiles in green
         highlightPath(Color.green);
     }
 
     private void OnMouseExit()
     {
-        print("OnMouseExit");
-        highlightPath(Color.grey);
+        // reset the tiles to hide the generated path
+        if (!_selected) {
+            highlightPath(Color.grey);
+        }
+        
     }
 
 
-    Tile getCurrentTile() {
+    private Tile GetCurrentTile() {
+        // shoot a ray vertically downwards to check for current tile
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
        
@@ -41,13 +52,27 @@ public class TacticsMove : MonoBehaviour {
         return null;
     }
 
-    private void highlightPath(Color color) {
-        Tile startingTile = getCurrentTile();
+    private void OnMouseDown()
+    {
+        _selected = !_selected;
+        if (_selected) {
+            _renderer.material.color = Color.blue;
+        } else {
+            _renderer.material.color = _originalColour;
+        }
+        highlightPath(Color.green);
+    }
 
+    private void highlightPath(Color color) {
+        Tile startingTile = GetCurrentTile();
+
+        // keep track of every tile that we've updated
         List<Tile> toReset = new List<Tile>();
+
+        // keep track of every tile that we need to look at
         Queue<Tile> q = new Queue<Tile>();
         q.Enqueue(startingTile);
-        while (q.Count > 0) {
+        while (q.Count > 0) { // only stop when there are no tiles left
             Tile t = q.Dequeue();
             toReset.Add(t);
 
@@ -58,21 +83,30 @@ public class TacticsMove : MonoBehaviour {
                 continue;
             }
 
+            // we are marking this tile with the given colour
             t.SetColour(color);
 
             var nextNeighbours = t.GetNeighbours();
             foreach (var n in nextNeighbours) {
                 if (!n.visited)
                 {
-                    
+                    // each tile is one further from the previous
                     n.distance = t.distance + 1;
+                    n.parent = t;
                     q.Enqueue(n);
                 }
             }
         }
 
+        // reset every tile that was looked at in this search
         foreach (Tile t in toReset) {
             t.Reset();
         }
+    }
+
+    public List<Tile> getPath()
+    {
+        List<Tile> path = new List<Tile>();
+        return path;
     }
 }

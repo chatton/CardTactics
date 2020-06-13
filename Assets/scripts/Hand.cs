@@ -26,6 +26,8 @@ public class Hand : MonoBehaviour
             Vector3 finalPos = Camera.main.ScreenToWorldPoint(screenPoint);
             finalPos.y += c.transform.lossyScale.y / 2;
             finalPos.x += c.transform.lossyScale.x / 2 * 0.75f + (i * 0.75f);
+
+            c.transform.rotation = Camera.main.transform.rotation;
             c.transform.position = finalPos;
         }
     }
