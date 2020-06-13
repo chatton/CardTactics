@@ -15,7 +15,7 @@ public abstract class TacticsMove : MonoBehaviour {
     [SerializeField] public Stack<Tile> _path;
     Vector3 heading;
     Vector3 velocity;
-    [SerializeField] float moveSpeed = 4f;
+    [SerializeField] public float moveSpeed = 4f;
     private HashSet<Tile> _visited;
     private List<Tile> _tilesInRange;
     private Queue<Tile> _tileQueue;

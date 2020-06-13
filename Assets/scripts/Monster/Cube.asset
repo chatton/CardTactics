@@ -9,12 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 168fcc8a1a0fb154cadf145e9dfe4ee4, type: 3}
-  m_Name: Attack Card
+  m_Script: {fileID: 11500000, guid: da05f458425de57468960b798fe310ef, type: 3}
+  m_Name: Cube
   m_EditorClassIdentifier: 
+<<<<<<< HEAD:Assets/scripts/Cards/Attack Card.asset
   name: Basic Attack
   icon: {fileID: 0}
   isDefaultItem: 0
   dmg: 10
   cost: 2
   range: 1
+=======
+  name: Cube
+  icon: {fileID: 0}
+  isDefaultItem: 0
+  hitPoint: 10
+  dmg: 2
+  _movementDistance: 10
+  moveSpeed: 15
+>>>>>>> a3a82e7fac7209839637df64bd508eae0aa68896:Assets/scripts/Monster/Cube.asset

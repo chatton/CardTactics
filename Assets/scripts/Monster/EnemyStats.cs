@@ -4,13 +4,13 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Enemy", menuName = "Enemy/New Enemy")]
 
-public class Enemy : ScriptableObject {
+public class EnemyStats : ScriptableObject {
     
         new public string name = "New Card";
         public Sprite icon = null;
         public bool isDefaultItem = false;
         public int hitPoint;
         public int dmg;
-        public int range;
-        public float speed;
+        public int _movementDistance;
+        public float moveSpeed;
 }

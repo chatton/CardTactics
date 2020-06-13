@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Player : TacticsMove
 {
+    [SerializeField] private int playerHitPoint;
+    [SerializeField] private int playerAttack;
     public override void BuildPath()
     {
         if (Input.GetMouseButtonUp(0))
