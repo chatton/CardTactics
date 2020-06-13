@@ -2,10 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public abstract class ExecuteCard
+{
+    public abstract void Execute();
+}
+
 public class Card : MonoBehaviour
 {
 
     public CardItem cardItem;
+    public bool attackSelect = false;
 
     [SerializeField] private Color _onMouseEnterColour;
     private Color _originalColour;
@@ -29,6 +35,11 @@ public class Card : MonoBehaviour
     {
         _renderer.material.color = _onMouseEnterColour;
         Debug.Log("Name: " + cardItem.name);
+    }
+
+    private void OnMouseDown()
+    {
+
     }
 
 }

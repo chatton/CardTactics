@@ -115,6 +115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardItem: {fileID: 11400000, guid: 604f97cda9e95a843973c538053e8dba, type: 2}
+  attackSelect: 0
   _onMouseEnterColour: {r: 0, g: 0, b: 0, a: 0}
 --- !u!222 &871429542086682565
 CanvasRenderer:
@@ -136,7 +137,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 962c558f4a58e7a4a9294b25d75aa09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardItem: {fileID: 0}
 --- !u!1 &2959467427968978780
 GameObject:
   m_ObjectHideFlags: 0
