@@ -7,7 +7,7 @@ using System;
 public abstract class TacticsMove : MonoBehaviour {
 
 
-    [SerializeField] private int _movementDistance = 5;
+    [SerializeField] protected int _movementDistance = 5;
     [SerializeField] private bool _selected;
     private Color _originalColour;
     private Renderer _renderer;
@@ -15,10 +15,13 @@ public abstract class TacticsMove : MonoBehaviour {
     [SerializeField] public Stack<Tile> _path;
     Vector3 heading;
     Vector3 velocity;
-    [SerializeField] float moveSpeed = 4f;
+    [SerializeField] public float moveSpeed = 4f;
     private HashSet<Tile> _visited;
     private List<Tile> _tilesInRange;
     private Queue<Tile> _tileQueue;
+
+
+    public abstract void BuildPath();
 
 
     private void Start()
@@ -42,7 +45,7 @@ public abstract class TacticsMove : MonoBehaviour {
 
         }
         else {
-            CheckMouseForTarget();
+            BuildPath();
         }
 
     }
@@ -85,7 +88,7 @@ public abstract class TacticsMove : MonoBehaviour {
 
 
     private bool HasValidTarget() {
-        return _path != null && _path.Count > 0;
+        return _path.Count > 0;
     }
 
     private void HighlightTilesInRange()
@@ -113,7 +116,7 @@ public abstract class TacticsMove : MonoBehaviour {
     }
 
 
-    private void BuildPathFromTile(Tile destinationTile)
+    protected void BuildPathFromTile(Tile destinationTile)
     {
         _path.Clear();
         Tile nextTile = destinationTile;
@@ -133,30 +136,6 @@ public abstract class TacticsMove : MonoBehaviour {
     private void OnMouseExit()
     {
         _mouseOver = false;
-    }
-
-    private void CheckMouseForTarget() {
-        if (Input.GetMouseButtonUp(0)) {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit)) {
-                Tile t = hit.collider.GetComponent<Tile>();
-                if (t == null) {
-                    return;
-                }
-
-                if (t.parent == null) {
-                    return;
-                }
-
-                if (t.distance > _movementDistance) {
-                    return;
-                }
-
-                BuildPathFromTile(t);
-            }
-        }
     }
 
     private Tile GetCurrentTile() {
