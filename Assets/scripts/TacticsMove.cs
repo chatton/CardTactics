@@ -12,13 +12,23 @@ public abstract class TacticsMove : MonoBehaviour {
     private Color _originalColour;
     private Renderer _renderer;
     private bool _mouseOver;
-    [SerializeField] private Tile _destinationTile;
-    [SerializeField] List<Tile> path;
+    [SerializeField] public Stack<Tile> _path;
+    Vector3 heading;
+    Vector3 velocity;
+    [SerializeField] float moveSpeed = 4f;
+    private HashSet<Tile> _visited;
+    private List<Tile> _tilesInRange;
+    private Queue<Tile> _tileQueue;
+
 
     private void Start()
     {
         _renderer = GetComponent<MeshRenderer>();
         _originalColour = _renderer.material.color;
+        _path = new Stack<Tile>();
+        _visited = new HashSet<Tile>();
+        _tilesInRange = new List<Tile>();
+        _tileQueue = new Queue<Tile>();
     }
 
     private void Update()
@@ -28,43 +38,54 @@ public abstract class TacticsMove : MonoBehaviour {
 
         if (HasValidTarget())
         {
-            SetDestinationTile();
             Move();
 
         }
         else {
             CheckMouseForTarget();
         }
-        
+
     }
 
-    private void SetDestinationTile()
+    private void CalculateHeading(Vector3 target)
     {
-
-        path = BuildPathFromTile(_destinationTile);
-        ResetTiles();
-
-        if (path.Count == 0)
-        {
-            _destinationTile = null;
-            return;
-        }
-
-        // TODO: teleporting to last tile for now
-        _destinationTile = path[path.Count - 1]; 
+        heading = target - transform.position;
+        heading.Normalize();
     }
 
-
+    private void SetHorizontalVelocity(){
+        velocity = heading * moveSpeed;
+    }
 
     private void Move()
     {
-        var destinationPos = _destinationTile.transform.position;
-        transform.position = new Vector3(destinationPos.x, transform.position.y, destinationPos.z);
+        ResetTiles();
+        if (_path.Count > 0)
+        {
+            Tile t = _path.Peek();
+            Vector3 target = new Vector3(t.transform.position.x, transform.position.y, t.transform.position.z);
+            if (Vector3.Distance(transform.position, target) >= 0.5f)
+            {
+                CalculateHeading(target); 
+                SetHorizontalVelocity();
+                transform.forward = heading; // update player to look towards target
+                transform.position += velocity * Time.deltaTime; // adjust position based on current velocity
+            }
+            else
+            {
+                if (_path.Count == 0) {
+                    transform.position = target;
+                }
+                
+                _path.Pop(); // remove the target from our path, we will reach the next one
+            }
+
+        }
     }
 
 
     private bool HasValidTarget() {
-        return _destinationTile != null && _destinationTile.distance <= _movementDistance;
+        return _path != null && _path.Count > 0;
     }
 
     private void HighlightTilesInRange()
@@ -92,42 +113,16 @@ public abstract class TacticsMove : MonoBehaviour {
     }
 
 
-
-    //public IEnumerator MoveOverSpeed(GameObject objectToMove, Vector3 end, float speed)
-    //{
-    //    // speed should be 1 unit per second
-    //    while (objectToMove.transform.position != end)
-    //    {
-    //        objectToMove.transform.position = Vector3.MoveTowards(objectToMove.transform.position, end, speed * Time.deltaTime);
-    //        yield return new WaitForEndOfFrame();
-    //    }
-    //}
-    //public IEnumerator MoveOverSeconds(GameObject objectToMove, Vector3 end, float seconds)
-    //{
-    //    float elapsedTime = 0;
-    //    Vector3 startingPos = objectToMove.transform.position;
-    //    while (elapsedTime < seconds)
-    //    {
-    //        objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / seconds));
-    //        elapsedTime += Time.deltaTime;
-    //        yield return new WaitForEndOfFrame();
-    //    }
-    //    objectToMove.transform.position = end;
-    //}
-
-    private List<Tile> BuildPathFromTile(Tile destinationTile)
+    private void BuildPathFromTile(Tile destinationTile)
     {
-        List<Tile> path = new List<Tile>();
+        _path.Clear();
         Tile nextTile = destinationTile;
         
         while (nextTile.parent != null) {
-            path.Add(nextTile);
+            _path.Push(nextTile);
             nextTile = nextTile.parent;
         }
 
-        path.Reverse();
-
-        return path;
     }
 
     private void OnMouseOver()
@@ -155,7 +150,7 @@ public abstract class TacticsMove : MonoBehaviour {
                     return;
                 }
 
-                _destinationTile = t;
+                BuildPathFromTile(t);
             }
         }
     }
@@ -181,42 +176,46 @@ public abstract class TacticsMove : MonoBehaviour {
     // GetTilesInRange returns a list of all the tiles within _movementDistance
     // tiles of the character.
     private List<Tile> GetTilesInRange() {
+        _visited.Clear();
+        _tilesInRange.Clear();
+        _tileQueue.Clear();
 
-        HashSet<Tile> visited = new HashSet<Tile>();
         Tile startingTile = GetCurrentTile();
 
         // keep track of every tile that we need to look at
-        Queue<Tile> q = new Queue<Tile>();
-        q.Enqueue(startingTile);
+        _tileQueue.Enqueue(startingTile);
        
-        while (q.Count > 0)
+        while (_tileQueue.Count > 0)
         {
             // only stop when there are no tiles left
-            Tile t = q.Dequeue();
+            Tile t = _tileQueue.Dequeue();
             
 
             // don't look at any tiles that are outside of the movement range
-            if (visited.Contains(t) || t.distance > _movementDistance)
+            if (_visited.Contains(t) || t.distance > _movementDistance)
             {
                 continue;
             }
 
-            visited.Add(t);
+            _visited.Add(t);
 
             var nextNeighbours = t.GetNeighbours();
             foreach (var n in nextNeighbours)
             {
-                if (!visited.Contains(n))
+                if (!_visited.Contains(n))
                 {
                     // each tile is one further from the previous
                     n.distance = t.distance + 1;
                     n.parent = t;
-                    q.Enqueue(n);
+                    _tileQueue.Enqueue(n);
                 }
             }
         }
 
-        return new List<Tile>(visited);
+
+
+        _tilesInRange.AddRange(_visited);
+        return _tilesInRange;
     }
 
     private void ResetTiles() {

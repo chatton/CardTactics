@@ -13,6 +13,7 @@ public class Tile : MonoBehaviour
     public bool walkable;
     public int distance;
     public Tile parent;
+    public bool partOfPath;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +35,11 @@ public class Tile : MonoBehaviour
         {
             SetColour(Color.green);
         }
-        else {
+        else if (partOfPath) {
+            SetColour(Color.red);
+        }
+        else
+        {
             SetColour(Color.gray);
         }
     }
@@ -50,6 +55,7 @@ public class Tile : MonoBehaviour
         visited = false;
         walkable = false;
         parent = null;
+        partOfPath = false;
         distance = 0;
     }
 
