@@ -150,6 +150,10 @@ public abstract class TacticsMove : MonoBehaviour {
                     return;
                 }
 
+                if (t.distance > _movementDistance) {
+                    return;
+                }
+
                 BuildPathFromTile(t);
             }
         }
