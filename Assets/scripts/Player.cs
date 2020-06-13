@@ -20,22 +20,22 @@ public class Player : TacticsMove
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t == null)
                 {
-                    return null;
+                    return new Stack<Tile>();
                 }
 
                 if (t.parent == null)
                 {
-                    return null;
+                    return new Stack<Tile>();
                 }
 
                 if (t.distance > _movementDistance)
                 {
-                    return null;
+                    return new Stack<Tile>();
                 }
 
                 return BuildPathFromTile(t);
             }
         }
-        return null;
+        return new Stack<Tile>();
     }
 }

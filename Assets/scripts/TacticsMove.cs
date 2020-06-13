@@ -52,25 +52,27 @@ public abstract class TacticsMove : MonoBehaviour {
         UpdateColour();
         HighlightTilesInRange();
 
+
+        if (_path == null || _path.Count == 0)
+        {
+            print("building path");
+            _path = BuildPath();
+            print(_path);
+        }
+
         if (HasValidTarget())
         {
             Move();
             CheckForTurnEnd();
         }
-        else {
-            // only build the path if we've reached the end of one already
-            if (_path == null || _path.Count == 0) {
-                print("building path");
-                _path = BuildPath();
-            }
-        }
-
+ 
     }
 
     private void CheckForTurnEnd()
     {
         if (_path.Count == 0) // movement has finished
         {
+            print("Endplayer player turn: " + gameObject.tag);
             _turnManager.NextTurn();
         }
         
@@ -89,6 +91,7 @@ public abstract class TacticsMove : MonoBehaviour {
     private void Move()
     {
         print("Moving");
+        print(_path);
         ResetTiles();
         if (_path.Count > 0)
         {
@@ -150,6 +153,9 @@ public abstract class TacticsMove : MonoBehaviour {
             path.Push(nextTile);
             nextTile = nextTile.parent;
         }
+
+        print("AAAAAA");
+        print(path);
         return path;
     }
 

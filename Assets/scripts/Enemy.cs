@@ -54,22 +54,27 @@ public class Enemy : TacticsMove
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t == null)
                 {
-                    return null;
+                    print("1");
+                    return new Stack<Tile>();
                 }
 
                 if (t.parent == null)
                 {
-                    return null;
+                    print("2");
+                    return new Stack<Tile>();
                 }
 
                 if (t.distance > _movementDistance)
                 {
-                    return null;
+                    print("3");
+                    return new Stack<Tile>();
                 }
 
-                BuildPathFromTile(t);
+                print("4");
+                return BuildPathFromTile(t);
             }
         }
-        return null;
+        print("5");
+        return new Stack<Tile>();
     }
 }
