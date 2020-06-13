@@ -93,7 +93,6 @@ public class Tile : MonoBehaviour
             Tile t = CheckTile(v);
             if (t != null)
             {
-                //t.debug = true
                 tiles.Add(t);
             }
         }

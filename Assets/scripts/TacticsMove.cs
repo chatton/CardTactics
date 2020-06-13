@@ -8,28 +8,32 @@ using System;
 public abstract class TacticsMove : MonoBehaviour {
 
 
-    TurnManager _turnManager;
+    public TurnManager _turnManager;
 
     [SerializeField] protected int _movementDistance = 5;
-    [SerializeField] private bool _selected;
-    private Color _originalColour;
-    private Renderer _renderer;
-    private bool _mouseOver;
-    [SerializeField] public Stack<Tile> _path;
-    Vector3 heading;
-    Vector3 velocity;
-    [SerializeField] public float moveSpeed = 4f;
-    private HashSet<Tile> _visited;
-    private List<Tile> _tilesInRange;
-    private Queue<Tile> _tileQueue;
+    [SerializeField] protected bool _selected;
+    protected Color _originalColour;
+    protected Renderer _renderer;
+    protected bool _mouseOver;
+    [SerializeField] protected Stack<Tile> _path;
+    protected Vector3 heading;
+    protected Vector3 velocity;
+    [SerializeField] protected float moveSpeed = 4f;
+    protected HashSet<Tile> _visited;
+    protected List<Tile> _tilesInRange;
+    protected Queue<Tile> _tileQueue;
 
 
-    public abstract void BuildPath();
+    public abstract Stack<Tile> BuildPath();
 
-
-    private void Start()
+    public void Awake()
     {
         _turnManager = FindObjectOfType<TurnManager>();
+        _turnManager.RegisterTeam(gameObject.tag);
+    }
+
+    public void Start()
+    {
         _renderer = GetComponent<MeshRenderer>();
         _originalColour = _renderer.material.color;
         _path = new Stack<Tile>();
@@ -38,20 +42,40 @@ public abstract class TacticsMove : MonoBehaviour {
         _tileQueue = new Queue<Tile>();
     }
 
-    private void Update()
+    public void Update()
     {
+        string currentTeam = _turnManager.GetActiveTeam();
+        if (gameObject.tag != currentTeam) {
+            return;
+        }
+
         UpdateColour();
         HighlightTilesInRange();
+
+
+        if (_path == null || _path.Count == 0)
+        {
+            print("building path");
+            _path = BuildPath();
+            print(_path);
+        }
 
         if (HasValidTarget())
         {
             Move();
-
+            CheckForTurnEnd();
         }
-        else {
-            BuildPath();
-        }
+ 
+    }
 
+    private void CheckForTurnEnd()
+    {
+        if (_path.Count == 0) // movement has finished
+        {
+            print("Endplayer player turn: " + gameObject.tag);
+            _turnManager.NextTurn();
+        }
+        
     }
 
     private void CalculateHeading(Vector3 target)
@@ -66,6 +90,8 @@ public abstract class TacticsMove : MonoBehaviour {
 
     private void Move()
     {
+        print("Moving");
+        print(_path);
         ResetTiles();
         if (_path.Count > 0)
         {
@@ -83,7 +109,6 @@ public abstract class TacticsMove : MonoBehaviour {
                 if (_path.Count == 0) {
                     transform.position = target;
                 }
-                
                 _path.Pop(); // remove the target from our path, we will reach the next one
             }
 
@@ -120,16 +145,18 @@ public abstract class TacticsMove : MonoBehaviour {
     }
 
 
-    protected void BuildPathFromTile(Tile destinationTile)
+    protected Stack<Tile> BuildPathFromTile(Tile destinationTile)
     {
-        _path.Clear();
+        var path = new Stack<Tile>();
         Tile nextTile = destinationTile;
-        
         while (nextTile.parent != null) {
-            _path.Push(nextTile);
+            path.Push(nextTile);
             nextTile = nextTile.parent;
         }
 
+        print("AAAAAA");
+        print(path);
+        return path;
     }
 
     private void OnMouseOver()
@@ -156,6 +183,11 @@ public abstract class TacticsMove : MonoBehaviour {
     // filling of the tiles as walkable.
     private void OnMouseDown()
     {
+        string currentTeam = _turnManager.GetActiveTeam();
+        if (gameObject.tag != currentTeam)
+        {
+            return;
+        }
         _selected = !_selected;
     }
 
@@ -176,7 +208,6 @@ public abstract class TacticsMove : MonoBehaviour {
         {
             // only stop when there are no tiles left
             Tile t = _tileQueue.Dequeue();
-            
 
             // don't look at any tiles that are outside of the movement range
             if (_visited.Contains(t) || t.distance > _movementDistance)
@@ -198,8 +229,6 @@ public abstract class TacticsMove : MonoBehaviour {
                 }
             }
         }
-
-
 
         _tilesInRange.AddRange(_visited);
         return _tilesInRange;

@@ -12,10 +12,11 @@ public class Enemy : TacticsMove
     public GameObject explosion;
 
 
-    private void Start()
+    public void Start()
     {
+        base.Start();
         //get HP
-        enemyHP = enemyStats.hitPoint;
+        // enemyHP = enemyStats.hitPoint;
 
         //overwrite distance
         _movementDistance = enemyStats._movementDistance;
@@ -31,19 +32,49 @@ public class Enemy : TacticsMove
         }
     }
 
-    private void Update()
-    {
-
-    }
-
     public void Explode(Vector3 position)
     {
         Instantiate(explosion, position, Quaternion.identity);
         Debug.Log("BOOOOM");
+        if (enemyHP <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public override void BuildPath()
+    public override Stack<Tile> BuildPath()
     {
-        throw new System.NotImplementedException();
+        if (Input.GetMouseButtonUp(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                Tile t = hit.collider.GetComponent<Tile>();
+                if (t == null)
+                {
+                    print("1");
+                    return new Stack<Tile>();
+                }
+
+                if (t.parent == null)
+                {
+                    print("2");
+                    return new Stack<Tile>();
+                }
+
+                if (t.distance > _movementDistance)
+                {
+                    print("3");
+                    return new Stack<Tile>();
+                }
+
+                print("4");
+                return BuildPathFromTile(t);
+            }
+        }
+        print("5");
+        return new Stack<Tile>();
     }
 }
