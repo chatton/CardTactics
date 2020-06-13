@@ -35,6 +35,7 @@ public class Enemy : TacticsMove
 
     private void Update()
     {
+<<<<<<< Updated upstream
 
 
     }
@@ -45,6 +46,9 @@ public class Enemy : TacticsMove
         Instantiate(explosion, position, Quaternion.identity);
         Debug.Log("BOOOOM");
         
+=======
+        base.Update();
+>>>>>>> Stashed changes
         if (enemyHP <= 0)
         {
             Destroy(gameObject);
