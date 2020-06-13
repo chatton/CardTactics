@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 168fcc8a1a0fb154cadf145e9dfe4ee4, type: 3}
   m_Name: Attack Card
   m_EditorClassIdentifier: 
-  name: New Card
+  name: Basic Attack
   icon: {fileID: 0}
   isDefaultItem: 0
-  dmg: 0
-  cost: 0
-  range: 0
+  dmg: 10
+  cost: 2
+  range: 1
