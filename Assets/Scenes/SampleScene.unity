@@ -3743,7 +3743,7 @@ MonoBehaviour:
   _movementDistance: 5
   _selected: 0
   moveSpeed: 4
-  enemyStats: {fileID: 0}
+  enemyStats: {fileID: 11400000, guid: d19b1d9471250fc48866eb3a9eca0f22, type: 2}
   enemyHP: 0
 --- !u!65 &732292057
 BoxCollider:
