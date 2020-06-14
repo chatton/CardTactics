@@ -6,7 +6,6 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
 
-    private List<Tile> _neighbours;
     public bool visited = false;
     private MeshRenderer _renderer;
 
@@ -18,7 +17,6 @@ public class Tile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _neighbours = BuildNeighboursList();
         _renderer = GetComponent<MeshRenderer>();
         SetColour(Color.gray);
     }
@@ -75,11 +73,6 @@ public class Tile : MonoBehaviour
 
     public List<Tile> GetNeighbours()
     {
-        return _neighbours;
-    }
-
-    public List<Tile> BuildNeighboursList()
-    {
         Vector3[] checkVectors = new[] {
             Vector3.forward,
             -Vector3.forward,
@@ -93,7 +86,12 @@ public class Tile : MonoBehaviour
             Tile t = CheckTile(v);
             if (t != null)
             {
-                tiles.Add(t);
+                RaycastHit hit;
+                if (!Physics.Raycast(t.transform.position, Vector3.up, out hit, 1))
+                {
+                    tiles.Add(t);
+                }
+               
             }
         }
         return tiles;
