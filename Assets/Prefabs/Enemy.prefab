@@ -126,8 +126,8 @@ MonoBehaviour:
   _selected: 0
   moveSpeed: 4
   enemyStats: {fileID: 11400000, guid: d19b1d9471250fc48866eb3a9eca0f22, type: 2}
-  enemyHP: 0
-  explosion: {fileID: 0}
+  enemyHP: 10
+  explosion: {fileID: 167042, guid: 5ff7098700dbdbf4a93dc6ab0d9d92a0, type: 3}
 --- !u!1001 &8209312669914706011
 PrefabInstance:
   m_ObjectHideFlags: 0

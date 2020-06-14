@@ -16,7 +16,7 @@ public class Enemy : TacticsMove
     {
         base.Start();
         //get HP
-        // enemyHP = enemyStats.hitPoint;
+        enemyHP = enemyStats.hitPoint;
 
         //overwrite distance
         _movementDistance = enemyStats._movementDistance;
