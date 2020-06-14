@@ -48,15 +48,14 @@ public abstract class TacticsMove : MonoBehaviour {
     {
         UpdateColour();
 
+        string currentTeam = _turnManager.GetActiveTeam();
+        if (gameObject.tag != currentTeam)
+        {
+            return;
+        }
+
         if (!_moving)
         {
-
-            string currentTeam = _turnManager.GetActiveTeam();
-            if (gameObject.tag != currentTeam)
-            {
-                return;
-            }
-
             if (!foundTiles) {
                 FindSelectableTiles();
                 foundTiles = true;
@@ -66,7 +65,6 @@ public abstract class TacticsMove : MonoBehaviour {
                 // need to find selectable tiles again
                 foundTiles = false;
             }
-            
         }
         else {
             Move();
@@ -175,8 +173,10 @@ public abstract class TacticsMove : MonoBehaviour {
             {
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t != null) {
-                    MoveToTile(t);
-                    return true;
+                    if (t.distance > _movementDistance) {
+                        MoveToTile(t);
+                        return true;
+                    }
                 }
             }
         }
