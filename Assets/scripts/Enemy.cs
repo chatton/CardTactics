@@ -42,41 +42,4 @@ public class Enemy : TacticsMove
         }
     }
 
-    public override Stack<Tile> BuildPath()
-    {
-        return new Stack<Tile>();
-        //    if (Input.GetMouseButtonUp(0))
-        //    {
-        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //        RaycastHit hit;
-        //        if (Physics.Raycast(ray, out hit))
-        //        {
-        //            Tile t = hit.collider.GetComponent<Tile>();
-        //            if (t == null)
-        //            {
-        //                print("1");
-        //                return new Stack<Tile>();
-        //            }
-
-        //            if (t.parent == null)
-        //            {
-        //                print("2");
-        //                return new Stack<Tile>();
-        //            }
-
-        //            if (t.distance > _movementDistance)
-        //            {
-        //                print("3");
-        //                return new Stack<Tile>();
-        //            }
-
-        //            print("4");
-        //            return BuildPathFromTile(t);
-        //        }
-        //    }
-        //    print("5");
-        //    return new Stack<Tile>();
-        //}
-    }
 }
