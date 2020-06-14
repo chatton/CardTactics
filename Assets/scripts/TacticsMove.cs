@@ -23,6 +23,7 @@ public abstract class TacticsMove : MonoBehaviour {
     protected List<Tile> _tilesInRange;
     protected Queue<Tile> _tileQueue;
     [SerializeField] private bool _moving;
+    protected bool foundTiles = false;
 
     [SerializeField] protected List<Tile> _selectableTiles;
 
@@ -56,8 +57,16 @@ public abstract class TacticsMove : MonoBehaviour {
                 return;
             }
 
-            FindSelectableTiles();
-            CheckMouse();
+            if (!foundTiles) {
+                FindSelectableTiles();
+                foundTiles = true;
+            }
+
+            if (CheckMouse()) {
+                // need to find selectable tiles again
+                foundTiles = false;
+            }
+            
         }
         else {
             Move();
@@ -155,7 +164,7 @@ public abstract class TacticsMove : MonoBehaviour {
         _selected = !_selected;
     }
 
-    public void CheckMouse()
+    public bool CheckMouse()
     {
         if (Input.GetMouseButtonUp(0))
         {
@@ -167,9 +176,11 @@ public abstract class TacticsMove : MonoBehaviour {
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t != null) {
                     MoveToTile(t);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     private void MoveToTile(Tile t)
