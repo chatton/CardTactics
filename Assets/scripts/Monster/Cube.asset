@@ -17,6 +17,5 @@ MonoBehaviour:
   isDefaultItem: 0
   hitPoint: 10
   dmg: 2
-  _movementDistance: 10
-  moveSpeed: 15
-
+  _movementDistance: 4
+  moveSpeed: 10

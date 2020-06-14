@@ -8,7 +8,6 @@ public class TurnManager : MonoBehaviour
     // Use this for initialization
     private Queue<string> _teams;
 
-
     public void NextTurn() {
         _teams.Enqueue(_teams.Dequeue());      
     }
