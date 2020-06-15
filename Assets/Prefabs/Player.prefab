@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7997318779655545465}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -114,6 +114,9 @@ MonoBehaviour:
   moveSpeed: 3
   _moving: 0
   _selectableTiles: []
+  weapons:
+  - {fileID: 11400000, guid: 0c0774194d8684057bf6097ac90c7f3b, type: 2}
+  targets: []
   playerHitPoint: 0
   playerAttack: 0
 --- !u!1001 &1473860990702882094

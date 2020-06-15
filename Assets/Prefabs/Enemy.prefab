@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4087963347163077132}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -131,6 +131,7 @@ MonoBehaviour:
   _selectableTiles: []
   weapons:
   - {fileID: 11400000, guid: 0c0774194d8684057bf6097ac90c7f3b, type: 2}
+  targets: []
   enemyStats: {fileID: 11400000, guid: d19b1d9471250fc48866eb3a9eca0f22, type: 2}
   enemyHP: 0
   explosion: {fileID: 167042, guid: 5ff7098700dbdbf4a93dc6ab0d9d92a0, type: 3}

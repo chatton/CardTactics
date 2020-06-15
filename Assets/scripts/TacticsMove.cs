@@ -5,7 +5,8 @@ using System;
 
 // this class is the base class for Player and AI movement
 [RequireComponent(typeof(TurnManager))]
-public abstract class TacticsMove : MonoBehaviour {
+public abstract class TacticsMove : MonoBehaviour
+{
 
 
     public TurnManager _turnManager;
@@ -49,7 +50,8 @@ public abstract class TacticsMove : MonoBehaviour {
         selectedWeapon = weapons[0];
     }
 
-    public void EndTurn() {
+    public void EndTurn()
+    {
         RemoveSelectableTiles();
         _turnManager.NextTurn();
         _moving = false;
@@ -66,25 +68,29 @@ public abstract class TacticsMove : MonoBehaviour {
             return;
         }
 
-        if (hasMoved) {
-            FindTargetsInRange();
+        if (hasMoved)
+        {
+            //FindTargetsInRange();
             EndTurn();
             return;
         }
 
         if (!_moving)
         {
-            if (!foundTiles) {
+            if (!foundTiles)
+            {
                 FindSelectableTiles();
                 foundTiles = true;
             }
 
-            if (CheckMouse()) {
+            if (CheckMouse())
+            {
                 // need to find selectable tiles again
                 foundTiles = false;
             }
         }
-        else {
+        else
+        {
             Move();
         }
 
@@ -97,7 +103,8 @@ public abstract class TacticsMove : MonoBehaviour {
         heading.Normalize();
     }
 
-    private void SetHorizontalVelocity() {
+    private void SetHorizontalVelocity()
+    {
         velocity = heading * moveSpeed;
     }
 
@@ -123,20 +130,24 @@ public abstract class TacticsMove : MonoBehaviour {
             }
             else
             {
-                 transform.position = target;
+                transform.position = target;
                 _path.Pop(); // remove the target from our path, we will reach the next one
             }
         }
-        else {
+        else
+        {
             _moving = false;
             RemoveSelectableTiles();
             hasMoved = true;
-       
+
         }
     }
 
-    private void RemoveSelectableTiles() {
-        foreach (var t in _selectableTiles) {
+    private void RemoveSelectableTiles()
+    {
+        foreach (var t in _selectableTiles)
+        {
+            print("resetting tile: " + t.name);
             t.Reset(this);
         }
         _selectableTiles.Clear();
@@ -165,10 +176,12 @@ public abstract class TacticsMove : MonoBehaviour {
         _mouseOver = false;
     }
 
-    private Tile GetCurrentTile() {
+    private Tile GetCurrentTile()
+    {
         // shoot a ray vertically downwards to check for current tile
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit)) {
+        if (Physics.Raycast(transform.position, Vector3.down, out hit))
+        {
 
             return hit.transform.gameObject.GetComponent<Tile>();
         }
@@ -198,11 +211,13 @@ public abstract class TacticsMove : MonoBehaviour {
             if (Physics.Raycast(ray, out hit))
             {
                 Tile t = hit.collider.GetComponent<Tile>();
-                if (t != null) {
-                    if (t.GetDistance(this) > _movementDistance || t.GetDistance(this) == 0) {
+                if (t != null)
+                {
+                    if (t.GetDistance(this) > _movementDistance || t.GetDistance(this) == 0)
+                    {
                         return false;
                     }
-                
+
                     MoveToTile(t);
                     return true;
                 }
@@ -223,10 +238,11 @@ public abstract class TacticsMove : MonoBehaviour {
         }
     }
 
-    private List<TacticsMove> FindTargetsInRange() {
+    private List<TacticsMove> FindTargetsInRange()
+    {
         var visited = new HashSet<Tile>();
         var tileQueue = new Queue<Tile>();
-        targets = new List<TacticsMove>();
+        var targets = new List<TacticsMove>();
 
 
         Tile startingTile = GetCurrentTile();
@@ -250,14 +266,14 @@ public abstract class TacticsMove : MonoBehaviour {
             var nextNeighbours = t.GetNeighbours(true);
             foreach (var n in nextNeighbours)
             {
-                if (visited.Contains(n)) {
+                if (visited.Contains(n))
+                {
                     continue;
                 }
 
                 n.SetDistance(this, t.GetDistance(this) + 1);
-                if (n.GetDistance(this) <= selectedWeapon.range) {
-
-      
+                if (n.GetDistance(this) <= selectedWeapon.range)
+                {
                     n.SetInAttackRange(this);
                     TacticsMove unitOnTile = n.GetUnitOnTile();
                     if (unitOnTile != null && unitOnTile != this)
@@ -270,12 +286,55 @@ public abstract class TacticsMove : MonoBehaviour {
             }
         }
         return targets;
-      }
-    
+    }
 
-    // GetTilesInRange returns a list of all the tiles within _movementDistance
-    // tiles of the character.
-    private void FindSelectableTiles() {
+
+
+    //// GetTilesInRange returns a list of all the tiles within _movementDistance
+    //// tiles of the character.
+    //private void FindSelectableTiles()
+    //{
+    //    _visited.Clear();
+    //    _tileQueue.Clear();
+    //    _selectableTiles.Clear();
+
+    //    Tile startingTile = GetCurrentTile();
+
+    //    // keep track of every tile that we need to look at
+    //    _tileQueue.Enqueue(startingTile);
+
+    //    while (_tileQueue.Count > 0)
+    //    {
+    //        // only stop when there are no tiles left
+    //        Tile t = _tileQueue.Dequeue();
+
+    //        // don't look at any tiles that are outside of the movement range
+    //        if (_visited.Contains(t))
+    //        {
+    //            continue;
+    //        }
+
+    //        _visited.Add(t);
+
+    //        var nextNeighbours = t.GetNeighbours();
+    //        foreach (var n in nextNeighbours)
+    //        {
+    //            if (!_visited.Contains(n) && t.GetDistance(this) < _movementDistance)
+    //            {
+    //                // each tile is one further from the previous
+    //                n.SetDistance(this, t.GetDistance(this) + 1);
+    //                n.SetParent(this, t);
+    //                n.SetWalkable(this);
+    //                _tileQueue.Enqueue(n);
+    //            }
+    //        }
+    //    }
+
+    //    _selectableTiles.AddRange(_visited);
+    //}
+
+    private void FindSelectableTiles()
+    {
         _visited.Clear();
         _tileQueue.Clear();
         _selectableTiles.Clear();
@@ -284,24 +343,24 @@ public abstract class TacticsMove : MonoBehaviour {
 
         // keep track of every tile that we need to look at
         _tileQueue.Enqueue(startingTile);
-       
+
         while (_tileQueue.Count > 0)
         {
             // only stop when there are no tiles left
             Tile t = _tileQueue.Dequeue();
-
-            // don't look at any tiles that are outside of the movement range
-            if (_visited.Contains(t))
-            {
-                continue;
-            }
-
             _visited.Add(t);
 
             var nextNeighbours = t.GetNeighbours();
             foreach (var n in nextNeighbours)
             {
-                if (!_visited.Contains(n) && t.GetDistance(this) < _movementDistance)
+                if (_visited.Contains(n))
+                {
+                    continue;
+                }
+
+
+                var dist = t.GetDistance(this);
+                if (dist < _movementDistance)
                 {
                     // each tile is one further from the previous
                     n.SetDistance(this, t.GetDistance(this) + 1);
@@ -309,10 +368,19 @@ public abstract class TacticsMove : MonoBehaviour {
                     n.SetWalkable(this);
                     _tileQueue.Enqueue(n);
                 }
+
+                if (dist < _movementDistance + selectedWeapon.range)
+                {
+                    n.SetInAttackRange(this);
+                    _visited.Add(n);
+                }
+
+                
+
             }
         }
 
+
         _selectableTiles.AddRange(_visited);
     }
-
 }

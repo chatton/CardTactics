@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class State 
+public class State
 {
     [SerializeField] public bool visited = false;
     [SerializeField] public int distance = 0;
@@ -16,11 +16,10 @@ public class State
 
 public class Tile : MonoBehaviour
 {
-
-
     private MeshRenderer _renderer;
     private TurnManager turnManager;
 
+    [SerializeField] public Dictionary<TacticsMove, State> pathFindingState;
 
 
     private State GetState(TacticsMove tm) {
@@ -54,7 +53,7 @@ public class Tile : MonoBehaviour
         return state.parent;
     }
 
-    [SerializeField] public Dictionary<TacticsMove, State> pathFindingState;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -80,15 +79,12 @@ public class Tile : MonoBehaviour
         TacticsMove currentPlayer = turnManager.GetActivePlayer();
         State state = GetState(currentPlayer);
 
-        //if (state.inAttackRange && state.walkable) {
-            //SetColour(Color.red + Color.green);
-        //} else
-       if (state.inAttackRange) {
-            SetColour(Color.red);
-        }
-        else if (state.walkable)
-        {
+       if (state.walkable) {
             SetColour(Color.green);
+        }
+        else if (state.inAttackRange)
+        {
+            SetColour(Color.red);
         }
         else
         {
