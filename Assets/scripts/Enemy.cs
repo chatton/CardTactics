@@ -16,6 +16,7 @@ public class Enemy : TacticsMove
 
     public void Awake()
     {
+        base.Awake();
         healthBar = GetComponent<HealthBar>();
     }
 
@@ -40,6 +41,7 @@ public class Enemy : TacticsMove
 
     public void Update()
     {
+        base.Update();
         if (healthBar.currentHealth <= 0)
         {
             Explode(transform.position);
