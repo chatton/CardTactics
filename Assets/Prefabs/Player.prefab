@@ -112,6 +112,8 @@ MonoBehaviour:
   _movementDistance: 5
   _selected: 0
   moveSpeed: 3
+  _moving: 0
+  _selectableTiles: []
   playerHitPoint: 0
   playerAttack: 0
 --- !u!1001 &1473860990702882094

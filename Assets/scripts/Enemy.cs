@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
+[RequireComponent(typeof(HealthBar))]
 public class Enemy : TacticsMove
 {
 
@@ -11,21 +12,35 @@ public class Enemy : TacticsMove
     public int enemyHP = 0;
     public GameObject explosion;
 
+    public HealthBar healthBar;
+
+    public void Awake()
+    {
+        healthBar = GetComponent<HealthBar>();
+    }
 
     public void Start()
     {
         base.Start();
         //get HP
-        enemyHP = enemyStats.hitPoint;
+        healthBar.MaxHealth = enemyStats.hitPoint;
 
         //overwrite distance
         _movementDistance = enemyStats._movementDistance;
 
         //overwrite speed
         moveSpeed = enemyStats.moveSpeed;
-        Debug.Log(_movementDistance);
-        Debug.Log(moveSpeed);
-        if (enemyHP <= 0)
+
+    }
+
+    public void OnMouseDown()
+    {
+        healthBar.TakeDamage(10);
+    }
+
+    public void Update()
+    {
+        if (healthBar.currentHealth <= 0)
         {
             Explode(transform.position);
             Destroy(gameObject);
@@ -36,10 +51,12 @@ public class Enemy : TacticsMove
     {
         Instantiate(explosion, position, Quaternion.identity);
         Debug.Log("BOOOOM");
-        if (enemyHP <= 0)
+        if (healthBar.currentHealth <= 0)
         {
             Destroy(gameObject);
         }
     }
+
+   
 
 }
