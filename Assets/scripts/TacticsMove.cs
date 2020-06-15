@@ -147,7 +147,6 @@ public abstract class TacticsMove : MonoBehaviour
     {
         foreach (var t in _selectableTiles)
         {
-            print("resetting tile: " + t.name);
             t.Reset(this);
         }
         _selectableTiles.Clear();
@@ -238,99 +237,55 @@ public abstract class TacticsMove : MonoBehaviour
         }
     }
 
-    private List<TacticsMove> FindTargetsInRange()
-    {
-        var visited = new HashSet<Tile>();
-        var tileQueue = new Queue<Tile>();
-        var targets = new List<TacticsMove>();
-
-
-        Tile startingTile = GetCurrentTile();
-
-        // keep track of every tile that we need to look at
-        tileQueue.Enqueue(startingTile);
-
-        while (tileQueue.Count > 0)
-        {
-            // only stop when there are no tiles left
-            Tile t = tileQueue.Dequeue();
-
-            // don't look at any tiles that are outside of the movement range
-            if (visited.Contains(t))
-            {
-                continue;
-            }
-
-            visited.Add(t);
-
-            var nextNeighbours = t.GetNeighbours(true);
-            foreach (var n in nextNeighbours)
-            {
-                if (visited.Contains(n))
-                {
-                    continue;
-                }
-
-                n.SetDistance(this, t.GetDistance(this) + 1);
-                if (n.GetDistance(this) <= selectedWeapon.range)
-                {
-                    n.SetInAttackRange(this);
-                    TacticsMove unitOnTile = n.GetUnitOnTile();
-                    if (unitOnTile != null && unitOnTile != this)
-                    {
-                        targets.Add(unitOnTile);
-                    }
-                    tileQueue.Enqueue(n);
-                }
-
-            }
-        }
-        return targets;
-    }
-
-
-
-    //// GetTilesInRange returns a list of all the tiles within _movementDistance
-    //// tiles of the character.
-    //private void FindSelectableTiles()
+    // TODO: maybe we don't need this?
+    //private List<TacticsMove> FindTargetsInRange()
     //{
-    //    _visited.Clear();
-    //    _tileQueue.Clear();
-    //    _selectableTiles.Clear();
+    //    var visited = new HashSet<Tile>();
+    //    var tileQueue = new Queue<Tile>();
+    //    var targets = new List<TacticsMove>();
+
 
     //    Tile startingTile = GetCurrentTile();
 
     //    // keep track of every tile that we need to look at
-    //    _tileQueue.Enqueue(startingTile);
+    //    tileQueue.Enqueue(startingTile);
 
-    //    while (_tileQueue.Count > 0)
+    //    while (tileQueue.Count > 0)
     //    {
     //        // only stop when there are no tiles left
-    //        Tile t = _tileQueue.Dequeue();
+    //        Tile t = tileQueue.Dequeue();
 
     //        // don't look at any tiles that are outside of the movement range
-    //        if (_visited.Contains(t))
+    //        if (visited.Contains(t))
     //        {
     //            continue;
     //        }
 
-    //        _visited.Add(t);
+    //        visited.Add(t);
 
-    //        var nextNeighbours = t.GetNeighbours();
+    //        var nextNeighbours = t.GetNeighbours(true);
     //        foreach (var n in nextNeighbours)
     //        {
-    //            if (!_visited.Contains(n) && t.GetDistance(this) < _movementDistance)
+    //            if (visited.Contains(n))
     //            {
-    //                // each tile is one further from the previous
-    //                n.SetDistance(this, t.GetDistance(this) + 1);
-    //                n.SetParent(this, t);
-    //                n.SetWalkable(this);
-    //                _tileQueue.Enqueue(n);
+    //                continue;
     //            }
+
+    //            n.SetDistance(this, t.GetDistance(this) + 1);
+    //            if (n.GetDistance(this) <= selectedWeapon.range)
+    //            {
+    //                n.SetInAttackRange(this);
+    //                TacticsMove unitOnTile = n.GetUnitOnTile();
+    //                if (unitOnTile != null && unitOnTile != this)
+    //                {
+    //                    targets.Add(unitOnTile);
+    //                }
+    //                tileQueue.Enqueue(n);
+    //            }
+
     //        }
     //    }
-
-    //    _selectableTiles.AddRange(_visited);
+    //    return targets;
     //}
 
     private void FindSelectableTiles()
@@ -358,25 +313,29 @@ public abstract class TacticsMove : MonoBehaviour
                     continue;
                 }
 
-
                 var dist = t.GetDistance(this);
-                if (dist < _movementDistance)
-                {
-                    // each tile is one further from the previous
-                    n.SetDistance(this, t.GetDistance(this) + 1);
-                    n.SetParent(this, t);
-                    n.SetWalkable(this);
-                    _tileQueue.Enqueue(n);
+
+                // the tile is out of range of movement and as a possible weapon target
+                if (dist > _movementDistance + selectedWeapon.range) {
+                    continue;
                 }
 
+                // it's possible to walk here
+                if (dist < _movementDistance)
+                {
+                    n.SetWalkable(this);
+                }
+
+                // it's possible to shoot here
                 if (dist < _movementDistance + selectedWeapon.range)
                 {
                     n.SetInAttackRange(this);
-                    _visited.Add(n);
                 }
 
-                
-
+                // each tile is one further from the previous
+                n.SetParent(this, t);
+                n.SetDistance(this, t.GetDistance(this) + 1);
+                _tileQueue.Enqueue(n);
             }
         }
 

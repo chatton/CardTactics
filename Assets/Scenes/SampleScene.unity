@@ -3510,11 +3510,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2695989076954402076, guid: aea82714ccbe3472fb7ca66a6081f271,
-        type: 3}
-      propertyPath: m_TagString
-      value: Enemy
-      objectReference: {fileID: 0}
     - target: {fileID: 3626948913789922304, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: healthbar
@@ -3644,7 +3639,7 @@ PrefabInstance:
         type: 3}
       propertyPath: weapons.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: 0c0774194d8684057bf6097ac90c7f3b,
+      objectReference: {fileID: 11400000, guid: 162317c58b3a74d6d82b3fa03255a24b,
         type: 2}
     m_RemovedComponents:
     - {fileID: 3567298034740745313, guid: aea82714ccbe3472fb7ca66a6081f271, type: 3}
@@ -5677,14 +5672,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7997318779655545414, guid: 64fe00232f50746eab5477512ad56630,
         type: 3}
-      propertyPath: m_TagString
-      value: Player
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7997318779655545465, guid: 64fe00232f50746eab5477512ad56630,
         type: 3}
       propertyPath: _turnManager
       value: 
       objectReference: {fileID: 1422240902}
+    - target: {fileID: 7997318779655545465, guid: 64fe00232f50746eab5477512ad56630,
+        type: 3}
+      propertyPath: weapons.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 162317c58b3a74d6d82b3fa03255a24b,
+        type: 2}
     - target: {fileID: 7997318779655545469, guid: 64fe00232f50746eab5477512ad56630,
         type: 3}
       propertyPath: m_LocalPosition.x
