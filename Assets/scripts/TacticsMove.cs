@@ -85,6 +85,14 @@ public abstract class TacticsMove : MonoBehaviour {
 
     private void Move()
     {
+
+        string currentTeam = _turnManager.GetActiveTeam();
+        if (gameObject.tag != currentTeam)
+        {
+            return;
+        }
+        print("It's " + gameObject.name + "'s turn");
+
         if (_path.Count > 0)
         {
             Tile t = _path.Peek();
@@ -105,8 +113,7 @@ public abstract class TacticsMove : MonoBehaviour {
         else {
             _moving = false;
             RemoveSelectableTiles();
-            _turnManager.NextTurn();
-            
+            _turnManager.NextTurn(); 
         }
     }
 
@@ -174,11 +181,12 @@ public abstract class TacticsMove : MonoBehaviour {
             {
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t != null) {
-                    if (t.distance <= _movementDistance) {
-                        MoveToTile(t);
-                        print("Moving to tile");
-                        return true;
+                    if (t.distance > _movementDistance || t.distance == 0) {
+                        return false;
                     }
+                
+                    MoveToTile(t);
+                    return true;
                 }
             }
         }
