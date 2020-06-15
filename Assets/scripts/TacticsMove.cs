@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System;
 
@@ -9,7 +8,7 @@ public abstract class TacticsMove : MonoBehaviour
 {
 
 
-    public TurnManager _turnManager;
+    private TurnManager _turnManager;
 
     [SerializeField] protected int _movementDistance = 5;
     [SerializeField] protected bool _selected;
@@ -54,26 +53,34 @@ public abstract class TacticsMove : MonoBehaviour
     {
         RemoveSelectableTiles();
         _turnManager.NextTurn();
+        _renderer.material.color = Color.grey;
         _moving = false;
         hasMoved = false;
     }
 
+
     public void Update()
     {
+        // nothing to do unless it is our turn
+        if (_turnManager.GetActivePlayer() != this)
+        {
+            return;
+        }
+
+
         UpdateColour();
+        UpdateMovement();
+        UpdateAction();
+    }
 
-        TacticsMove currentPlayer = _turnManager.GetActivePlayer();
-        if (currentPlayer != this)
-        {
+    private void UpdateMovement() {
+
+        // we can no longer move if we've already done it once this turn
+        if (hasMoved) {
+            HighlightAttackRange();
             return;
         }
 
-        if (hasMoved)
-        {
-            //FindTargetsInRange();
-            EndTurn();
-            return;
-        }
 
         if (!_moving)
         {
@@ -93,7 +100,52 @@ public abstract class TacticsMove : MonoBehaviour
         {
             Move();
         }
+    }
 
+
+    private void UpdateAction()
+    {
+        if (hasMoved)
+        {
+            if (PerformAction())
+            {
+                EndTurn();
+            }
+
+        }
+
+    }
+
+
+    public bool PerformAction()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 100))
+            {
+                HealthBar hb = hit.transform.GetComponent<HealthBar>();
+                if (hb == null)
+                {
+                    return false;
+                }
+
+                // the Tile that the unit that was just clicked on is standing on
+                Tile targetTile = GetTileAtPosition(hit.transform.position);
+               
+                // if the target is within our attack range, and we have ammo, we can attack
+                if (targetTile.IsReachableBy(this) && selectedWeapon.IsLoaded()) {
+                    selectedWeapon.Attack(hb);
+                    print("HIT: " + targetTile.name +". HP left: " + hb.currentHealth +"/" + hb.MaxHealth);
+                    return true;
+                }
+                return false;
+                
+            }
+        }
+        return false;
     }
 
 
@@ -137,9 +189,9 @@ public abstract class TacticsMove : MonoBehaviour
         else
         {
             _moving = false;
-            RemoveSelectableTiles();
             hasMoved = true;
-
+            RemoveSelectableTiles();
+            
         }
     }
 
@@ -177,9 +229,13 @@ public abstract class TacticsMove : MonoBehaviour
 
     private Tile GetCurrentTile()
     {
+        return GetTileAtPosition(transform.position);
+    }
+
+    private Tile GetTileAtPosition(Vector3 pos) {
         // shoot a ray vertically downwards to check for current tile
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit))
+        if (Physics.Raycast(pos, Vector3.down, out hit))
         {
 
             return hit.transform.gameObject.GetComponent<Tile>();
@@ -237,56 +293,52 @@ public abstract class TacticsMove : MonoBehaviour
         }
     }
 
-    // TODO: maybe we don't need this?
-    //private List<TacticsMove> FindTargetsInRange()
-    //{
-    //    var visited = new HashSet<Tile>();
-    //    var tileQueue = new Queue<Tile>();
-    //    var targets = new List<TacticsMove>();
 
+    private void HighlightAttackRange()
+    {
+        var visited = new HashSet<Tile>();
+        var tileQueue = new Queue<Tile>();
 
-    //    Tile startingTile = GetCurrentTile();
+        Tile startingTile = GetCurrentTile();
 
-    //    // keep track of every tile that we need to look at
-    //    tileQueue.Enqueue(startingTile);
+        // keep track of every tile that we need to look at
+        tileQueue.Enqueue(startingTile);
 
-    //    while (tileQueue.Count > 0)
-    //    {
-    //        // only stop when there are no tiles left
-    //        Tile t = tileQueue.Dequeue();
+        while (tileQueue.Count > 0)
+        {
+            // only stop when there are no tiles left
+            Tile t = tileQueue.Dequeue();
+            visited.Add(t);
 
-    //        // don't look at any tiles that are outside of the movement range
-    //        if (visited.Contains(t))
-    //        {
-    //            continue;
-    //        }
+            var nextNeighbours = t.GetNeighbours(true);
+            foreach (var n in nextNeighbours)
+            {
+                if (visited.Contains(n))
+                {
+                    continue;
+                }
 
-    //        visited.Add(t);
+                var dist = t.GetDistance(this);
+                if (dist > selectedWeapon.range)
+                {
+                    continue;
+                }
 
-    //        var nextNeighbours = t.GetNeighbours(true);
-    //        foreach (var n in nextNeighbours)
-    //        {
-    //            if (visited.Contains(n))
-    //            {
-    //                continue;
-    //            }
+                // it's possible to shoot here
+                if (dist < selectedWeapon.range)
+                {
+                    n.SetInAttackRange(this);
+                }
 
-    //            n.SetDistance(this, t.GetDistance(this) + 1);
-    //            if (n.GetDistance(this) <= selectedWeapon.range)
-    //            {
-    //                n.SetInAttackRange(this);
-    //                TacticsMove unitOnTile = n.GetUnitOnTile();
-    //                if (unitOnTile != null && unitOnTile != this)
-    //                {
-    //                    targets.Add(unitOnTile);
-    //                }
-    //                tileQueue.Enqueue(n);
-    //            }
+                // each tile is one further from the previous
+                n.SetParent(this, t);
+                n.SetDistance(this, t.GetDistance(this) + 1);
+                tileQueue.Enqueue(n);
+            }
+        }
 
-    //        }
-    //    }
-    //    return targets;
-    //}
+    }
+
 
     private void FindSelectableTiles()
     {
@@ -316,9 +368,9 @@ public abstract class TacticsMove : MonoBehaviour
                 var dist = t.GetDistance(this);
 
                 // the tile is out of range of movement and as a possible weapon target
-                if (dist > _movementDistance + selectedWeapon.range) {
-                    continue;
-                }
+                //if (dist > _movementDistance + selectedWeapon.range) {
+                //    continue;
+                //}
 
                 // it's possible to walk here
                 if (dist < _movementDistance)
@@ -327,10 +379,10 @@ public abstract class TacticsMove : MonoBehaviour
                 }
 
                 // it's possible to shoot here
-                if (dist < _movementDistance + selectedWeapon.range)
-                {
-                    n.SetInAttackRange(this);
-                }
+                //if (dist < _movementDistance + selectedWeapon.range)
+                //{
+                //    n.SetInAttackRange(this);
+                //}
 
                 // each tile is one further from the previous
                 n.SetParent(this, t);

@@ -12,15 +12,22 @@ public class Weapon : ScriptableObject
     [SerializeField] public string name;
     [SerializeField] public int ammo;
 
-    //public Weapon(string name, int damage, int range, int ammo) {
-    //    this.name = name;
-    //    this.damage = damage;
-    //    this.range = range;
-    //    this.ammo = ammo;
-    //}
 
+    public bool IsLoaded() {
+        if (ammo == INFINITE_AMMO) {
+            return true;
+        }
+        return ammo > 0;
+    }
 
-    //public void Attack(TacticsMove target) {
+    // Attack deals damage to a HealthBar, this function
+    // returns a boolean indicating if the target was killed with the attack
+    public bool Attack(HealthBar hb) {
+        hb.TakeDamage(damage);
+        if (ammo != INFINITE_AMMO) {
+            ammo--;
+        }
+        return hb.currentHealth <= 0;
+    }
 
-    //}
 }

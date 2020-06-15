@@ -34,11 +34,6 @@ public class Enemy : TacticsMove
 
     }
 
-    public void OnMouseDown()
-    {
-        healthBar.TakeDamage(10);
-    }
-
     public void Update()
     {
         base.Update();

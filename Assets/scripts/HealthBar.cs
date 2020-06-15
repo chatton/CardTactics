@@ -12,14 +12,11 @@ public class HealthBar : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0) {
             currentHealth = 0;
-            Debug.Log("dead");
         }
     }
 
     void Update()
     {
-        //transform.LookAt(Camera.main.transform);
-        //transform.rotation = Camera.main.transform.rotation;
         healthbar.sizeDelta = new Vector2(currentHealth * 2, healthbar.sizeDelta.y);
     }
 }

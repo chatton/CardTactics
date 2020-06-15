@@ -161,29 +161,10 @@ public class Tile : MonoBehaviour
         return tiles;
     }
 
-
-    public List<Tile> GetNeighbours2()
+    internal bool IsReachableBy(TacticsMove tacticsMove)
     {
-        Vector3[] checkVectors = new[] {
-            Vector3.forward,
-            -Vector3.forward,
-            Vector3.right,
-            -Vector3.right,
-        };
-
-        var tiles = new List<Tile>();
-        foreach (Vector3 v in checkVectors)
-        {
-            Tile t = CheckTile(v);
-            if (t != null)
-            {
-      
-                    tiles.Add(t);
-              
-
-            }
-        }
-        return tiles;
+        var state = GetState(tacticsMove);
+        return state.inAttackRange;
     }
 
     public TacticsMove GetUnitOnTile() {

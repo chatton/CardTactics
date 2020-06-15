@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
+
+
+[RequireComponent(typeof(HealthBar))]
 public class Player : TacticsMove
 {
-    [SerializeField] private int playerHitPoint;
-    [SerializeField] private int playerAttack;
 
 }
