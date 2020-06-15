@@ -3510,6 +3510,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3099850637370082577, guid: aea82714ccbe3472fb7ca66a6081f271,
+        type: 3}
+      propertyPath: currentHealth
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3626948913789922304, guid: aea82714ccbe3472fb7ca66a6081f271,
         type: 3}
       propertyPath: healthbar

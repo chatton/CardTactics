@@ -132,6 +132,11 @@ public abstract class TacticsMove : MonoBehaviour
                     return false;
                 }
 
+                // we've clicked on ourselves, potentially no valid moves, end turn.
+                if (hb == GetComponent<HealthBar>()) {
+                    return true;
+                }
+
                 // the Tile that the unit that was just clicked on is standing on
                 Tile targetTile = GetTileAtPosition(hit.transform.position);
                
