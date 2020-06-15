@@ -8,23 +8,21 @@ public class State
     [SerializeField] public bool visited = false;
     [SerializeField] public int distance = 0;
     [SerializeField] public Tile parent = null;
+    public bool walkable;
+    public bool inAttackRange;
+
 }
 
 
 public class Tile : MonoBehaviour
 {
 
-    //public bool visited = false;
+
     private MeshRenderer _renderer;
-
-    public bool walkable;
-    //public int distance;
-    //public Tile parent;
-    //public bool partOfPath;
-    public bool inAttackRange;
+    private TurnManager turnManager;
 
 
- 
+
     private State GetState(TacticsMove tm) {
 
         if (!pathFindingState.ContainsKey(tm)) {
@@ -66,6 +64,10 @@ public class Tile : MonoBehaviour
         SetColour(Color.gray);
     }
 
+    private void Awake()
+    {
+        turnManager = FindObjectOfType<TurnManager>();
+    }
 
     private void Update()
     {
@@ -74,12 +76,17 @@ public class Tile : MonoBehaviour
 
     private void UpdateColour()
     {
-        if (inAttackRange && walkable) {
-            SetColour(Color.red + Color.green);
-        } else if (inAttackRange) {
+
+        TacticsMove currentPlayer = turnManager.GetActivePlayer();
+        State state = GetState(currentPlayer);
+
+        //if (state.inAttackRange && state.walkable) {
+            //SetColour(Color.red + Color.green);
+        //} else
+       if (state.inAttackRange) {
             SetColour(Color.red);
         }
-        else if (walkable)
+        else if (state.walkable)
         {
             SetColour(Color.green);
         }
@@ -102,14 +109,8 @@ public class Tile : MonoBehaviour
         state.visited = false;
         state.parent = null;
         state.distance = 0;
-
-
-        //visited = false;
-        walkable = false;
-        //parent = null;
-        //partOfPath = false;
-        inAttackRange = false;
-        //distance = 0;
+        state.walkable = false;
+        state.inAttackRange = false;
     }
 
     private Tile CheckTile(Vector3 direction)
@@ -209,4 +210,15 @@ public class Tile : MonoBehaviour
         return null;
     }
 
+    public void SetInAttackRange(TacticsMove tacticsMove)
+    {
+        var state = GetState(tacticsMove);
+        state.inAttackRange = true;
+    }
+
+    public void SetWalkable(TacticsMove tacticsMove)
+    {
+        var state = GetState(tacticsMove);
+        state.walkable = true;
+    }
 }

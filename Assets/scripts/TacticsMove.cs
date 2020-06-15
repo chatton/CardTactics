@@ -35,7 +35,7 @@ public abstract class TacticsMove : MonoBehaviour {
     public void Awake()
     {
         _turnManager = FindObjectOfType<TurnManager>();
-        _turnManager.RegisterTeam(gameObject.tag);
+        _turnManager.RegisterPlayer(this);
     }
 
     public void Start()
@@ -60,8 +60,8 @@ public abstract class TacticsMove : MonoBehaviour {
     {
         UpdateColour();
 
-        string currentTeam = _turnManager.GetActiveTeam();
-        if (gameObject.tag != currentTeam)
+        TacticsMove currentPlayer = _turnManager.GetActivePlayer();
+        if (currentPlayer != this)
         {
             return;
         }
@@ -104,8 +104,8 @@ public abstract class TacticsMove : MonoBehaviour {
     private void Move()
     {
 
-        string currentTeam = _turnManager.GetActiveTeam();
-        if (gameObject.tag != currentTeam)
+        TacticsMove currentPlayer = _turnManager.GetActivePlayer();
+        if (currentPlayer != this)
         {
             return;
         }
@@ -179,8 +179,8 @@ public abstract class TacticsMove : MonoBehaviour {
     // filling of the tiles as walkable.
     private void OnMouseDown()
     {
-        string currentTeam = _turnManager.GetActiveTeam();
-        if (gameObject.tag != currentTeam)
+        TacticsMove currentPlayer = _turnManager.GetActivePlayer();
+        if (currentPlayer != this)
         {
             return;
         }
@@ -257,8 +257,8 @@ public abstract class TacticsMove : MonoBehaviour {
                 n.SetDistance(this, t.GetDistance(this) + 1);
                 if (n.GetDistance(this) <= selectedWeapon.range) {
 
-                    n.inAttackRange = true;
-
+      
+                    n.SetInAttackRange(this);
                     TacticsMove unitOnTile = n.GetUnitOnTile();
                     if (unitOnTile != null && unitOnTile != this)
                     {
@@ -306,7 +306,7 @@ public abstract class TacticsMove : MonoBehaviour {
                     // each tile is one further from the previous
                     n.SetDistance(this, t.GetDistance(this) + 1);
                     n.SetParent(this, t);
-                    n.walkable = true;
+                    n.SetWalkable(this);
                     _tileQueue.Enqueue(n);
                 }
             }

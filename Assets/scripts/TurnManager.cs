@@ -6,23 +6,24 @@ using System;
 public class TurnManager : MonoBehaviour
 {
     // Use this for initialization
-    private Queue<string> _teams;
+    private Queue<TacticsMove> _players;
 
     public void NextTurn() {
-        _teams.Enqueue(_teams.Dequeue());      
+        _players.Enqueue(_players.Dequeue());      
     }
 
-    public string GetActiveTeam() {
-        return _teams.Peek();
+    public TacticsMove GetActivePlayer() {
+        return _players.Peek();
     }
 
-    public void RegisterTeam(string tag)
+    public void RegisterPlayer(TacticsMove player)
     {
-        if (_teams == null) {
-            _teams = new Queue<string>();
+        if (_players == null) {
+            _players = new Queue<TacticsMove>();
         }
-        if (!_teams.Contains(tag)) {
-            _teams.Enqueue(tag);
+        if (!_players.Contains(player)) {
+            _players.Enqueue(player);
         }
     }
+
 }
