@@ -164,6 +164,7 @@ public abstract class TacticsMove : MonoBehaviour {
 
     public bool CheckMouse()
     {
+
         if (Input.GetMouseButtonUp(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -173,8 +174,9 @@ public abstract class TacticsMove : MonoBehaviour {
             {
                 Tile t = hit.collider.GetComponent<Tile>();
                 if (t != null) {
-                    if (t.distance > _movementDistance) {
+                    if (t.distance <= _movementDistance) {
                         MoveToTile(t);
+                        print("Moving to tile");
                         return true;
                     }
                 }
@@ -223,7 +225,7 @@ public abstract class TacticsMove : MonoBehaviour {
             var nextNeighbours = t.GetNeighbours();
             foreach (var n in nextNeighbours)
             {
-                if (!_visited.Contains(n) && t.distance <= _movementDistance)
+                if (!_visited.Contains(n) && t.distance < _movementDistance)
                 {
                     // each tile is one further from the previous
                     n.distance = t.distance + 1;
